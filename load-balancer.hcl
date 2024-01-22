@@ -4,7 +4,8 @@ job "demo-saul-load-balancer" {
   region    = "global"
   id        = "demo-saul-load-balancer"
   priority  = "50"
-
+  datacenters   =  ["ifca-ai4eosc"]
+  
   group "usergroup" {
 
     count = 4
