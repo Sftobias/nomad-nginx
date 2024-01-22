@@ -1,9 +1,10 @@
 job "demo-saul-load-balancer" {
-  namespace = "default"
-  type      = "batch"
-  region    = "global"
-  id        = "demo-saul-load-balancer"
-  priority  = "50"
+  namespace     = "default"
+  type          = "batch"
+  region        = "global"
+  id            = "demo-saul-load-balancer"
+  priority      = "50"
+  datacenters   =  ["ifca-ai4eosc"]
 
   group "loadBalancer" {
 
