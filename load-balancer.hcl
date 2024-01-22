@@ -16,7 +16,11 @@ job "demo-saul-load-balancer" {
 
     network {
 
-      port "api" {
+      port "api-1" {
+        to = 5000  # -1 will assign random port
+      }
+
+      port "api-2" {
         to = 5000  # -1 will assign random port
       }
 
@@ -27,8 +31,13 @@ job "demo-saul-load-balancer" {
     }
 
     service {
-      name = "demo-back"
-      port = "api"
+      name = "demo-back-1"
+      port = "api-1"
+    }
+
+    service {
+      name = "demo-back-2"
+      port = "api-2"
     }
 
     service {
@@ -53,13 +62,13 @@ job "demo-saul-load-balancer" {
         image    = "deephdc/deep-oc-image-classification-tf:latest"
         command  = "timeout"
         args    = ["--preserve-status", "3000s", "deep-start", "--deepaas"]
-        ports    = ["api"]
+        ports    = ["api-1"]
         shm_size = 1000000000
       }
 
       resources {
-        cores  = 4
-        memory = 4000
+        cores  = 1
+        memory = 2000
       }
 
       restart {
@@ -77,13 +86,13 @@ job "demo-saul-load-balancer" {
         image    = "deephdc/deep-oc-image-classification-tf:latest"
         command  = "timeout"
         args    = ["--preserve-status", "3000s", "deep-start", "--deepaas"]
-        ports    = ["api"]
+        ports    = ["api-2"]
         shm_size = 1000000000
       }
 
       resources {
-        cores  = 4
-        memory = 4000
+        cores  = 1
+        memory = 2000
       }
 
       restart {
@@ -107,7 +116,12 @@ job "demo-saul-load-balancer" {
       template {
         data = <<EOF
           upstream backend {
-          {{ range service "demo-back" }}
+          {{ range service "demo-back-1" }}
+            server {{ .Address }}:{{ .Port }};
+          {{ else }}server 127.0.0.1:65535; # force a 502
+          {{ end }}
+          
+          {{ range service "demo-back-2" }}
             server {{ .Address }}:{{ .Port }};
           {{ else }}server 127.0.0.1:65535; # force a 502
           {{ end }}
