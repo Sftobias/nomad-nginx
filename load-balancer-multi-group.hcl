@@ -38,7 +38,7 @@ job "demo-saul-load-balancer" {
       config {
         image    = "deephdc/deep-oc-image-classification-tf:latest"
         command  = "timeout"
-        args    = ["--preserve-status", "3000s", "deep-start", "--deepaas"]
+        args    = ["--preserve-status", "24h", "deep-start", "--deepaas"]
         ports    = ["api"]
         shm_size = 1000000000
       }
